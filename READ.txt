@@ -2,3 +2,5 @@ Project： X423
 Data：    2025-03-07
 Describe：stm32 + charger + fuelgauge 
 Version:  2025-03-07 V0.0 init 
+		  2025-03-07 V0.1 之前没有过管理代码，第一次提交，后续在这个基础上开发
+		  
