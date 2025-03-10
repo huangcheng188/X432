@@ -132,6 +132,7 @@ int main(void)
     uint8_t buf[2];
     
     charger_process(charger, NULL);
+    hall_process(&hall);
 #if 1
     HAL_Delay(1000);
     HAL_ADC_MspDeInit(&hadc1);

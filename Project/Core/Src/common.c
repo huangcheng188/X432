@@ -6,7 +6,49 @@
 #include "charger.h"
 //#include "stm32g0xx_hal_usart.h"
 
+hall_t hall;
 
+void hall_set_mode(hall_t *phall, uint8_t mode)
+{
+    phall->hall_mode = mode;
+}
+
+void hall_process(hall_t *phall)
+{
+    if(phall == NULL)
+    return ;
+
+    static uint8_t mode = HALL_UNKNOW;
+    static uint8_t first_start = 0;    //first start ,can't get typec status
+
+    if(!first_start){
+      if(HAL_GPIO_ReadPin(GPIOA, GPIO_PIN_8)){
+          phall->hall_mode = HALL_FAR;
+      }else{
+          phall->hall_mode = HALL_NEAR;
+      }
+      first_start = 1;
+    }
+
+
+    if(mode == phall->hall_mode){
+      return ;
+    }
+
+    switch(phall->hall_mode){ 
+      case HALL_FAR:
+          HALL_LOG("HALL_FAR\r\n");
+          break;
+      case HALL_NEAR:
+          HALL_LOG("HALL_NEAR\r\n");
+          break;
+      default:
+          break;
+
+    }
+    mode = phall->hall_mode;
+
+}
 // 启动ADC转换并读取结果
 extern ADC_HandleTypeDef hadc1;
 extern UART_HandleTypeDef huart2;
@@ -94,6 +136,7 @@ void HAL_GPIO_EXTI_Rising_Callback(uint16_t GPIO_Pin)
     charger->set_typec_state(TYPEC_IS_NOT_EXIST);
     printf("GPIO_PIN_6 Rising\r\n");
   }else if (GPIO_Pin == GPIO_PIN_8){
+    hall_set_mode(&hall, HALL_FAR);
     printf("GPIO_PIN_8 Rising\r\n");
   }else{
     printf("Unkown Rising\r\n");
@@ -109,6 +152,7 @@ void HAL_GPIO_EXTI_Falling_Callback(uint16_t GPIO_Pin)
     charger->set_typec_state(TYPEC_IS_EXIST);
     printf("GPIO_PIN_6 Falling\r\n");
   }else if(GPIO_Pin == GPIO_PIN_8){
+    hall_set_mode(&hall, HALL_NEAR);
     printf("GPIO_PIN_8 Falling\r\n");
   }else{
     printf("Unkown Falling\r\n");
