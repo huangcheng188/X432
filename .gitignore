@@ -1,0 +1,12 @@
+*.d
+*.o
+*.crf
+*.lst
+*.htm
+*.lnp
+*.tmp
+*.axf
+*.map
+*.sct
+*.dep
+JLinkLog.txt

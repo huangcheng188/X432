@@ -129,21 +129,11 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    static int i=0,j;
-    HAL_StatusTypeDef ret;
     uint8_t buf[2];
-    buf[0] = 0;
-    buf[1] = 0;
-	  printf("MCU:%d\r\n",i++);
-    if(i==5){
-      //max77787_chager_chgenb(1);
-    }
-    //HAL_Delay(1000);
-    //RT9426_Update_Info();
-    HAL_Delay(1000);
     
     charger_process(charger, NULL);
 #if 1
+    HAL_Delay(1000);
     HAL_ADC_MspDeInit(&hadc1);
     buf[0] = 0x55;buf[1] = 0xDE;
     printf("uart send=0x%02x\r\n", buf[0]);
@@ -158,7 +148,8 @@ int main(void)
     printf("V==%f\r\n", adc_voltage);
 #endif
 //    led_control(LED_R, LED_ON);
-//    HAL_Delay(1000);    
+//    HAL_Delay(1000);  
+    stm32_heartrate();  
 
   }
   /* USER CODE END 3 */
@@ -342,7 +333,7 @@ static void MX_TIM2_Init(void)
   htim2.Instance = TIM2;
   htim2.Init.Prescaler = 63999;
   htim2.Init.CounterMode = TIM_COUNTERMODE_UP;
-  htim2.Init.Period = 999;
+  htim2.Init.Period = 9;
   htim2.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
   htim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_ENABLE;
   if (HAL_TIM_Base_Init(&htim2) != HAL_OK)

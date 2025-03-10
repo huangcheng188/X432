@@ -65,12 +65,24 @@ void project_version_printf(void)
   return;
 }
 
-
+timer_t timer = {0};
 
 //中断回调函数（中断下半段都放到此处统一处理）
 void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 {
-  printf("T\r\n");
+    if(timer.time_1s){
+        timer.time_1s--;
+    }
+}
+
+void stm32_heartrate(void)
+{
+    static uint8_t cnt = 0;
+    if(timer.time_1s == 0){
+        timer.time_1s = 100;
+        printf("MCU:%d timer.time_1s%d\r\n", cnt++, timer.time_1s);
+    }
+
 }
 
 void HAL_GPIO_EXTI_Rising_Callback(uint16_t GPIO_Pin)
