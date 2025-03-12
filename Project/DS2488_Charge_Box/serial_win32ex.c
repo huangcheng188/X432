@@ -82,14 +82,14 @@ int serialdebug=FALSE;
 //
 int OpenCOM(char *port_zstr)
 {
-   char tempstr[80];
-   short fRetVal;
+//   char tempstr[80];
+//   short fRetVal;
 //   COMMTIMEOUTS CommTimeOuts;
 //   DCB dcb;
 
    // debug
-   if (serialdebug)
-      dprintf("__OpenCOM__%s\n",port_zstr);
+//   if (serialdebug)
+//      dprintf("__OpenCOM__%s\n",port_zstr);
 
 
    // open COMM device
@@ -163,15 +163,15 @@ int OpenCOM(char *port_zstr)
 //   }
 
    // check if successfull
-   if (!fRetVal)
-   {
+//   if (!fRetVal)
+//   {
 //      CloseHandle(ComID);
 //      CloseHandle(osRead.hEvent);
 //      CloseHandle(osWrite.hEvent);
 //      ComID = 0;
-   }
+//   }
 
-   return fRetVal;
+//   return fRetVal;
 }
 
 //---------------------------------------------------------------------------

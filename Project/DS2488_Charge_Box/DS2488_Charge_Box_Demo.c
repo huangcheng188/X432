@@ -111,42 +111,42 @@ void ds2488_main(int argc, char **argv)
 
 
 	// open log file and print time stamp
-	DFile = fopen("log.txt", "a+");
-	if (DFile == NULL)
-	{
-		printf("ERROR, Could not open LOT.TXT log file!\n");
+//	DFile = fopen("log.txt", "a+");
+//	if (DFile == NULL)
+//	{
+//		dprintf("ERROR, Could not open LOT.TXT log file!\n");
 //		exit(1);
-	}
+//	}
 
 	// print time
 //	time(&tlong);
-	tstruct = localtime(&tlong);
-	dprintf("\n#TIMESTAMP: %02d/%02d/%04d %02d:%02d:%02d \n",
-		tstruct->tm_mon + 1, tstruct->tm_mday, tstruct->tm_year + 1900,
-		tstruct->tm_hour, tstruct->tm_min, tstruct->tm_sec);
+//	tstruct = localtime(&tlong);
+//	dprintf("\n#TIMESTAMP: %02d/%02d/%04d %02d:%02d:%02d \n",
+//		tstruct->tm_mon + 1, tstruct->tm_mday, tstruct->tm_year + 1900,
+//		tstruct->tm_hour, tstruct->tm_min, tstruct->tm_sec);
 
-	printf("------------------------------------------------\n");
-	printf("DS2488 Charging Box Demo\n");
-	printf("------------------------------------------------\n\n");
+	dprintf("------------------------------------------------\n");
+	dprintf("DS2488 Charging Box Demo\n");
+	dprintf("------------------------------------------------\n\n");
 
 	// check arguments to see if incorrect number 
 	if (argc != 2)
 	{
-		printf("\nusage: CHARGING BOX PORT INPUT NUM\n"
+		dprintf("\nusage: CHARGING BOX PORT INPUT NUM\r\n"
 			"  PORT - argument 1 specifies the COM port "
-			"(e.g. COM1 to COM9 or \\.\COM10 for COM10 and higher)\n"
-			"  version 1.01\n");
+			"(e.g. COM1 to COM9 or \\.\COM10 for COM10 and higher)\r\n"
+			"  version 1.01\r\n");
 //		exit(0);
 	}
 
 	// setup the port
-	if (OpenCOM(argv[1]) != TRUE)
-	{
-		dprintf("Failed to open serial port %s\n", argv[1]);
-		dprintf("\nPress any key to end demo...");
+//	if (OpenCOM(argv[1]) != TRUE)
+//	{
+//		dprintf("Failed to open serial port %s\n", argv[1]);
+//		dprintf("\nPress any key to end demo...");
 //		_getch();
 //		exit(0);
-	}
+//	}
 
 	dprintf("DS2488 connect and loop by pressing anykey!\n");
 	dprintf("*Note: While in loop exit by pressing anykey!\n");
@@ -173,7 +173,7 @@ void ds2488_main(int argc, char **argv)
 		// See if Earbuds in the charge box or not
 		if (OWReset())
 		{
-			printf("\n***Earbud(s) In Box***\n");
+			dprintf("\n***Earbud(s) In Box***\n");
 
 			// Discover both ROM IDs and populate list if not done already
 			if (!(Discovery_cnt == 2))
@@ -186,7 +186,7 @@ void ds2488_main(int argc, char **argv)
 			if (earbud_batt_FLAG)
 			{
 				SetChargeState();	// Charge right away
-					printf("\n***Charge State Long Increment***");
+					dprintf("\n***Charge State Long Increment***");
 				msDelay(5000);		// Charge longer before next check
 			}
 
@@ -219,11 +219,11 @@ void ds2488_main(int argc, char **argv)
 				BUF[1] = rand() % 100;		// Emulate BCD 8-bit Battery level (e.g. 49h is 73% box charge level)
 				if (WriteBuffer(2, BUF))
 				{
-					printf("\n***Sent Box Battery Level***\n");
+					dprintf("\n***Sent Box Battery Level***\n");
 				}
 
 				SetChargeState();
-				printf("\n***Charge State Normal Increment***\n");
+				dprintf("\n***Charge State Normal Increment***\n");
 				msDelay(4000);	// Charge normal increment
 
 				// Check Earbud for small msg
@@ -232,11 +232,11 @@ void ds2488_main(int argc, char **argv)
 				if (read_from_BUFB(BUF))
 				{
 					if (BUF[0] == Msg_Left_Battery_Bud)
-						printf("Left Earbud Battery Level Received: %02d%%\n", BUF[1]);
+						dprintf("Left Earbud Battery Level Received: %02d%%\n", BUF[1]);
 
 					/// Clear BUFA flag by writting to BUF and provide battery voltage
 					if (WriteBuffer(0, BUF))
-						printf("BUFA/BUFB flags cleared.\n");
+						dprintf("BUFA/BUFB flags cleared.\n");
 				}
 			}
 		}
@@ -244,7 +244,7 @@ void ds2488_main(int argc, char **argv)
 		{
 			RTSCOM(1);		// Set RTS_N non-active to make sure 5V Charging Power is off
 			DTRCOM(1);		// Set DTR_N non-active to turn off VPUP
-			printf("\n***Earbud(s) Not In Box - In Power Saver Mode***\n");
+			dprintf("\n***Earbud(s) Not In Box - In Power Saver Mode***\n");
 			Sleep(100);
 		}
 
@@ -359,7 +359,7 @@ int CheckEarbudPower(int cnt)
 	// Check 1st earbud
 	if (!(cnt && status_byte & MASK_IOBS))
 	{
-		printf("1st Earbud Battery Dead\n");
+		dprintf("1st Earbud Battery Dead\n");
 	}
 	// Check for another earbud
 	if (cnt == 2)
@@ -371,7 +371,7 @@ int CheckEarbudPower(int cnt)
 	// Check 2nd earbud
 	if (!(cnt && status_byte & MASK_IOBS))
 	{
-		printf("2nd Earbud Battery Dead\n");
+		dprintf("2nd Earbud Battery Dead\n");
 		return dead_earbud_battery = TRUE;
 	}
 	return FALSE;

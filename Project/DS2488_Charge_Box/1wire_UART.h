@@ -59,6 +59,7 @@ extern unsigned char ROM_NO[8];
 #define uchar unsigned short 
 typedef unsigned long DWORD;
 #define dprintf printf
-#define Sleep(x) HAL_Delay(x*1000) 
+#define dprintf(fmt, ...) printf(fmt"\r\n", ##__VA_ARGS__)
+#define Sleep(x) HAL_Delay(x) 
 //add end
 #endif
