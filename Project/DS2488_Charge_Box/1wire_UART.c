@@ -1,4 +1,4 @@
-#include <windows.h>
+ //#include <windows.h>
 #include <stdio.h>
 
 #include "serial_win32ex.h"
@@ -45,7 +45,7 @@ int USpeed;		//	1-Wire communication speed
 
 int owdebug = FALSE;
 
-int dprintf(char *format, ...);
+//int dprintf(char *format, ...);
 
 
 //---------------------------------------------------------------------------
@@ -298,7 +298,7 @@ void OWWriteByte(unsigned char sendbyte)
 {
 	// debug
 	if (owdebug)
-		dprintf("%02X ", sendbyte);
+		printf("%02X ", sendbyte);
 
 	OWTouchByte(sendbyte);
 }
@@ -317,7 +317,7 @@ unsigned char OWReadByte(void)
 
 	// debug
 	if (owdebug)
-		dprintf("[%02X] ", rt);
+		printf("[%02X] ", rt);
 
 	return rt;
 }
@@ -381,7 +381,7 @@ void OWBlock(unsigned char *tran_buf, int tran_len)
 	{
 		for (int i = 0; i < tran_len; i++)
 		{
-				dprintf("%02X ", tran_buf[i]);
+				printf("%02X ", tran_buf[i]);
 		}
 	}
 

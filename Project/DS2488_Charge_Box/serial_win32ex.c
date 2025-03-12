@@ -41,8 +41,8 @@
 */
 
 #include <stdio.h>
-#include <windows.h>
-
+//#include <windows.h>
+#include "1wire_UART.h"
 #define SERIAL_SUPPORT
 #include "serial_win32ex.h"
 
@@ -60,11 +60,11 @@ int DCDCOM(void);
 int RICOM(void);
 int CTSCOM(void);
 
-extern int dprintf(char *format, ...);
+//extern int dprintf(char *format, ...);
 
 // Win32 serial globals
-HANDLE ComID;
-OVERLAPPED osRead,osWrite;
+//HANDLE ComID;
+//OVERLAPPED osRead,osWrite;
 
 // debug mode
 int serialdebug=FALSE;
@@ -84,8 +84,8 @@ int OpenCOM(char *port_zstr)
 {
    char tempstr[80];
    short fRetVal;
-   COMMTIMEOUTS CommTimeOuts;
-   DCB dcb;
+//   COMMTIMEOUTS CommTimeOuts;
+//   DCB dcb;
 
    // debug
    if (serialdebug)
@@ -93,82 +93,82 @@ int OpenCOM(char *port_zstr)
 
 
    // open COMM device
-   if ((ComID =
-      CreateFile( port_zstr, GENERIC_READ | GENERIC_WRITE,
-                  0,
-                  NULL,                 // no security attrs
-                  OPEN_EXISTING,
-                  FILE_FLAG_OVERLAPPED, // overlapped I/O
-                  NULL )) == (HANDLE) -1 )
-   {
-      ComID = 0;
-      return FALSE;
-   }
-   else
-   {
-      // create events for detection of reading and write to com port
-      sprintf(tempstr,"COMM_READ_OVERLAPPED_EVENT_FOR_MAXIM");
-      osRead.hEvent = CreateEvent(NULL,TRUE,FALSE,tempstr);
-      sprintf(tempstr,"COMM_WRITE_OVERLAPPED_EVENT_FOR_MAXIM");
-      osWrite.hEvent = CreateEvent(NULL,TRUE,FALSE,tempstr);
+//   if ((ComID =
+//      CreateFile( port_zstr, GENERIC_READ | GENERIC_WRITE,
+//                  0,
+//                  NULL,                 // no security attrs
+//                  OPEN_EXISTING,
+//                  FILE_FLAG_OVERLAPPED, // overlapped I/O
+//                  NULL )) == (HANDLE) -1 )
+//   {
+//      ComID = 0;
+//      return FALSE;
+//   }
+//   else
+//   {
+//      // create events for detection of reading and write to com port
+//      sprintf(tempstr,"COMM_READ_OVERLAPPED_EVENT_FOR_MAXIM");
+//      osRead.hEvent = CreateEvent(NULL,TRUE,FALSE,tempstr);
+//      sprintf(tempstr,"COMM_WRITE_OVERLAPPED_EVENT_FOR_MAXIM");
+//      osWrite.hEvent = CreateEvent(NULL,TRUE,FALSE,tempstr);
 
-      // get any early notifications
-      SetCommMask(ComID, EV_RXCHAR | EV_TXEMPTY | EV_ERR | EV_BREAK);
+//      // get any early notifications
+//      SetCommMask(ComID, EV_RXCHAR | EV_TXEMPTY | EV_ERR | EV_BREAK);
 
-      // setup device buffers
-      SetupComm(ComID, 2048, 2048);
+//      // setup device buffers
+//      SetupComm(ComID, 2048, 2048);
 
-      // purge any information in the buffer
-      PurgeComm(ComID, PURGE_TXABORT | PURGE_RXABORT |
-                           PURGE_TXCLEAR | PURGE_RXCLEAR );
+//      // purge any information in the buffer
+//      PurgeComm(ComID, PURGE_TXABORT | PURGE_RXABORT |
+//                           PURGE_TXCLEAR | PURGE_RXCLEAR );
 
-      // set up for overlapped non-blocking I/O
-      CommTimeOuts.ReadIntervalTimeout = 0; 
-      CommTimeOuts.ReadTotalTimeoutMultiplier = 40; 
-      CommTimeOuts.ReadTotalTimeoutConstant = 200; 
-      CommTimeOuts.WriteTotalTimeoutMultiplier = 40; 
-      CommTimeOuts.WriteTotalTimeoutConstant = 200; 
-      SetCommTimeouts(ComID, &CommTimeOuts);
+//      // set up for overlapped non-blocking I/O
+//      CommTimeOuts.ReadIntervalTimeout = 0; 
+//      CommTimeOuts.ReadTotalTimeoutMultiplier = 40; 
+//      CommTimeOuts.ReadTotalTimeoutConstant = 200; 
+//      CommTimeOuts.WriteTotalTimeoutMultiplier = 40; 
+//      CommTimeOuts.WriteTotalTimeoutConstant = 200; 
+//      SetCommTimeouts(ComID, &CommTimeOuts);
 
-      // setup the com port
-      GetCommState(ComID, &dcb);
+//      // setup the com port
+//      GetCommState(ComID, &dcb);
 
-      dcb.BaudRate = CBR_9600;               // current baud rate
-      dcb.fBinary = TRUE;                    // binary mode, no EOF check
-      dcb.fParity = FALSE;                   // enable parity checking
-      dcb.fOutxCtsFlow = FALSE;              // CTS output flow control
-      dcb.fOutxDsrFlow = FALSE;              // DSR output flow control
-      dcb.fDtrControl = DTR_CONTROL_ENABLE;  // DTR flow control type (default of)
-      dcb.fDsrSensitivity = FALSE;           // DSR sensitivity
-      dcb.fTXContinueOnXoff = TRUE;          // XOFF continues Tx
-      dcb.fOutX = FALSE;                     // XON/XOFF out flow control
-      dcb.fInX = FALSE;                      // XON/XOFF in flow control
-      dcb.fErrorChar = FALSE;                // enable error replacement
-      dcb.fNull = FALSE;                     // enable null stripping
-      dcb.fRtsControl = RTS_CONTROL_DISABLE; // RTS flow control (default off)
-      //?????dcb.fRtsControl = RTS_CONTROL_ENABLE; // RTS flow control (default off)
-      dcb.fAbortOnError = FALSE;             // abort reads/writes on error
-      dcb.XonLim = 0;                        // transmit XON threshold
-      dcb.XoffLim = 0;                       // transmit XOFF threshold
-      dcb.ByteSize = 8;                      // number of bits/byte, 4-8
-      dcb.Parity = NOPARITY;                 // 0-4=no,odd,even,mark,space
-      dcb.StopBits = ONESTOPBIT;             // 0,1,2 = 1, 1.5, 2
-      dcb.XonChar = 0;                       // Tx and Rx XON character
-      dcb.XoffChar = 1;                      // Tx and Rx XOFF character
-      dcb.ErrorChar = 0;                     // error replacement character
-      dcb.EofChar = 0;                       // end of input character
-      dcb.EvtChar = 0;                       // received event character
+//      dcb.BaudRate = CBR_9600;               // current baud rate
+//      dcb.fBinary = TRUE;                    // binary mode, no EOF check
+//      dcb.fParity = FALSE;                   // enable parity checking
+//      dcb.fOutxCtsFlow = FALSE;              // CTS output flow control
+//      dcb.fOutxDsrFlow = FALSE;              // DSR output flow control
+//      dcb.fDtrControl = DTR_CONTROL_ENABLE;  // DTR flow control type (default of)
+//      dcb.fDsrSensitivity = FALSE;           // DSR sensitivity
+//      dcb.fTXContinueOnXoff = TRUE;          // XOFF continues Tx
+//      dcb.fOutX = FALSE;                     // XON/XOFF out flow control
+//      dcb.fInX = FALSE;                      // XON/XOFF in flow control
+//      dcb.fErrorChar = FALSE;                // enable error replacement
+//      dcb.fNull = FALSE;                     // enable null stripping
+//      dcb.fRtsControl = RTS_CONTROL_DISABLE; // RTS flow control (default off)
+//      //?????dcb.fRtsControl = RTS_CONTROL_ENABLE; // RTS flow control (default off)
+//      dcb.fAbortOnError = FALSE;             // abort reads/writes on error
+//      dcb.XonLim = 0;                        // transmit XON threshold
+//      dcb.XoffLim = 0;                       // transmit XOFF threshold
+//      dcb.ByteSize = 8;                      // number of bits/byte, 4-8
+//      dcb.Parity = NOPARITY;                 // 0-4=no,odd,even,mark,space
+//      dcb.StopBits = ONESTOPBIT;             // 0,1,2 = 1, 1.5, 2
+//      dcb.XonChar = 0;                       // Tx and Rx XON character
+//      dcb.XoffChar = 1;                      // Tx and Rx XOFF character
+//      dcb.ErrorChar = 0;                     // error replacement character
+//      dcb.EofChar = 0;                       // end of input character
+//      dcb.EvtChar = 0;                       // received event character
 
-      fRetVal = SetCommState(ComID, &dcb);
-   }
+//      fRetVal = SetCommState(ComID, &dcb);
+//   }
 
    // check if successfull
    if (!fRetVal)
    {
-      CloseHandle(ComID);
-      CloseHandle(osRead.hEvent);
-      CloseHandle(osWrite.hEvent);
-      ComID = 0;
+//      CloseHandle(ComID);
+//      CloseHandle(osRead.hEvent);
+//      CloseHandle(osWrite.hEvent);
+//      ComID = 0;
    }
 
    return fRetVal;
@@ -181,18 +181,18 @@ void CloseCOM(void)
 {
    // disable event notification and wait for thread
    // to halt
-   SetCommMask(ComID, 0);
+//   SetCommMask(ComID, 0);
 
-   // drop DTR
-   EscapeCommFunction(ComID, CLRDTR);
+//   // drop DTR
+//   EscapeCommFunction(ComID, CLRDTR);
 
-   // purge any outstanding reads/writes and close device handle
-   PurgeComm(ComID, PURGE_TXABORT | PURGE_RXABORT |
-                    PURGE_TXCLEAR | PURGE_RXCLEAR );
-   CloseHandle(ComID);
-   CloseHandle(osRead.hEvent);
-   CloseHandle(osWrite.hEvent);
-   ComID = 0;
+//   // purge any outstanding reads/writes and close device handle
+//   PurgeComm(ComID, PURGE_TXABORT | PURGE_RXABORT |
+//                    PURGE_TXCLEAR | PURGE_RXCLEAR );
+//   CloseHandle(ComID);
+//   CloseHandle(osRead.hEvent);
+//   CloseHandle(osWrite.hEvent);
+//   ComID = 0;
 }
 
 //---------------------------------------------------------------------------
@@ -203,8 +203,8 @@ void FlushCOM(void)
    int rslt;
 
    // purge any information in the buffer
-   rslt = PurgeComm(ComID, PURGE_TXABORT | PURGE_RXABORT |
-                    PURGE_TXCLEAR | PURGE_RXCLEAR );
+//   rslt = PurgeComm(ComID, PURGE_TXABORT | PURGE_RXABORT |
+//                    PURGE_TXCLEAR | PURGE_RXCLEAR );
 
    // debug
    if (serialdebug)
@@ -240,25 +240,25 @@ int WriteCOM(int outlen, unsigned char *outbuf)
    to = 40 * outlen + 205;
 
    // reset the write event
-   ResetEvent(osWrite.hEvent);
+//   ResetEvent(osWrite.hEvent);
 
    // write the byte
-   fWriteStat = WriteFile(ComID, (LPSTR) &outbuf[0],
-                outlen, &dwBytesWritten, &osWrite );
+//   fWriteStat = WriteFile(ComID, (LPSTR) &outbuf[0],
+//                outlen, &dwBytesWritten, &osWrite );
 
    // check for an error
-   if (!fWriteStat)
-      ler = GetLastError();
+//   if (!fWriteStat)
+//      ler = GetLastError();
 
    // if not done writting then wait
-   if (!fWriteStat && ler == ERROR_IO_PENDING)
-   {
-      WaitForSingleObject(osWrite.hEvent,to);
+//   if (!fWriteStat && ler == ERROR_IO_PENDING)
+//   {
+//      WaitForSingleObject(osWrite.hEvent,to);
 
-      // verify all is written correctly
-      fWriteStat = GetOverlappedResult(ComID, &osWrite,
-                   &dwBytesWritten, FALSE);
-   }
+//      // verify all is written correctly
+//      fWriteStat = GetOverlappedResult(ComID, &osWrite,
+//                   &dwBytesWritten, FALSE);
+//   }
 
    // check results of write
    if (!fWriteStat || (dwBytesWritten != (DWORD)outlen))
@@ -281,39 +281,39 @@ int ReadCOM(int inlen, unsigned char *inbuf)
    DWORD dwLength=0;
    BOOL fReadStat;
    DWORD ler=0,to,i;
-   COMSTAT ComStat;
+//   COMSTAT ComStat;
    DWORD dwErrorFlags;
 
    // calculate a timeout
    to = 40 * inlen + 205;
 
    // reset the read event
-   ResetEvent(osRead.hEvent);
+//   ResetEvent(osRead.hEvent);
 
    // read
-   fReadStat = ReadFile(ComID, (LPSTR) &inbuf[0],
-                      inlen, &dwLength, &osRead);
+//   fReadStat = ReadFile(ComID, (LPSTR) &inbuf[0],
+//                      inlen, &dwLength, &osRead);
 
    // check for an error
-   if (!fReadStat)
-      ler = GetLastError();
+//   if (!fReadStat)
+//      ler = GetLastError();
 
    // if not done reading then wait
-   if (!fReadStat && ler == ERROR_IO_PENDING)
-   {
-      // wait until everything is read
-      WaitForSingleObject(osRead.hEvent,to);
+//   if (!fReadStat && ler == ERROR_IO_PENDING)
+//   {
+//      // wait until everything is read
+//      WaitForSingleObject(osRead.hEvent,to);
 
-      // verify all is read correctly
-      fReadStat = GetOverlappedResult(ComID, &osRead,
-                   &dwLength, FALSE);
-   }
+//      // verify all is read correctly
+//      fReadStat = GetOverlappedResult(ComID, &osRead,
+//                   &dwLength, FALSE);
+//   }
 
    // check results
    if (fReadStat)
    {
       // check if any more bytes in buffer 
-      ClearCommError(ComID, &dwErrorFlags, &ComStat);
+//      ClearCommError(ComID, &dwErrorFlags, &ComStat);
 
       // debug
       if (serialdebug)
@@ -324,16 +324,16 @@ int ReadCOM(int inlen, unsigned char *inbuf)
          for (i = 0; i < dwLength; i++)
             dprintf("<%02X",inbuf[i]);
          dprintf("\n");
-         if (ComStat.cbInQue > 0)
-            dprintf("MORE BYTES %d\n",ComStat.cbInQue);
+//         if (ComStat.cbInQue > 0)
+//            dprintf("MORE BYTES %d\n",ComStat.cbInQue);
       }
 
       return dwLength;
    }
    else
    {
-      if (serialdebug)
-            dprintf("   (%d,%d)[\n",ler,GetLastError());
+//      if (serialdebug)
+//            dprintf("   (%d,%d)[\n",ler,GetLastError());
 
       return 0;
    }
@@ -345,13 +345,13 @@ int ReadCOM(int inlen, unsigned char *inbuf)
 void BreakCOM(void)
 {
    // start the reset pulse
-   SetCommBreak(ComID);
+//   SetCommBreak(ComID);
 
    // sleep
-   Sleep(2);
+//   Sleep(2);
 
    // clear the break
-   ClearCommBreak(ComID);
+//   ClearCommBreak(ComID);
 
    // debug
    if (serialdebug)
@@ -372,44 +372,44 @@ void BreakCOM(void)
 //
 void SetBaudCOM(unsigned char new_baud)
 {
-   DCB dcb;
+//   DCB dcb;
 
    // get the current com port state
-   GetCommState(ComID, &dcb);
+//   GetCommState(ComID, &dcb);
 
    // change just the baud rate
    switch (new_baud)
    {
       case PARMSET_115200:
-         dcb.BaudRate = CBR_115200;
+//         dcb.BaudRate = CBR_115200;
          break;
 	  case PARMSET_122400:
-		  dcb.BaudRate = 122400;	// Needed for DS2488 tRSTL; IOA only powered
+//		  dcb.BaudRate = 122400;	// Needed for DS2488 tRSTL; IOA only powered
 		  break;
       case PARMSET_57600:
-         dcb.BaudRate = CBR_57600;
+//         dcb.BaudRate = CBR_57600;
          break;
       case PARMSET_19200:
-         dcb.BaudRate = CBR_19200;
+//         dcb.BaudRate = CBR_19200;
          break;
 	  case PARMSET_806400:
-		  dcb.BaudRate = 806400;	// Used for DS2488 tW0L
+//		  dcb.BaudRate = 806400;	// Used for DS2488 tW0L
 		  break;
-	  case PARMSET_1228800:
-		  dcb.BaudRate = 1228800;	// Used for DS2488 tRL/tW1L
+//	  case PARMSET_1228800:
+//		  dcb.BaudRate = 1228800;	// Used for DS2488 tRL/tW1L
 		  break;
-      case PARMSET_9600:
+//      case PARMSET_9600:
       default:
-         dcb.BaudRate = CBR_9600;
+//         dcb.BaudRate = CBR_9600;
          break;
    }
 
    // restore to set the new baud rate
-   SetCommState(ComID, &dcb);
+//   SetCommState(ComID, &dcb);
 
    // debug
-   if (serialdebug)
-      dprintf("__SetBaudCOM %d__\n",dcb.BaudRate);
+//   if (serialdebug)
+//      dprintf("__SetBaudCOM %d__\n",dcb.BaudRate);
 }
 
 //--------------------------------------------------------------------------
@@ -420,17 +420,17 @@ void SetBaudCOM(unsigned char new_baud)
 //
 void DTRCOM(int state)
 {
-   DCB dcb;
+//   DCB dcb;
 
-   dcb.DCBlength = sizeof(DCB);
-   GetCommState(ComID, &dcb);
+//   dcb.DCBlength = sizeof(DCB);
+//   GetCommState(ComID, &dcb);
 
-   if (state)
-      dcb.fDtrControl = DTR_CONTROL_ENABLE;
-   else
-      dcb.fDtrControl = DTR_CONTROL_DISABLE;
+//   if (state)
+//      dcb.fDtrControl = DTR_CONTROL_ENABLE;
+//   else
+//      dcb.fDtrControl = DTR_CONTROL_DISABLE;
 
-   SetCommState(ComID, &dcb);
+//   SetCommState(ComID, &dcb);
 
    // debug
    if (serialdebug)
@@ -445,18 +445,18 @@ void DTRCOM(int state)
 //
 void RTSCOM(int state)
 {
-   DCB dcb;
+//   DCB dcb;
 
-   dcb.DCBlength = sizeof(DCB);
-   GetCommState(ComID, &dcb);
+//   dcb.DCBlength = sizeof(DCB);
+//   GetCommState(ComID, &dcb);
 
-   if (state)
-      dcb.fRtsControl = RTS_CONTROL_ENABLE;
-   else
-      dcb.fRtsControl = RTS_CONTROL_DISABLE;
+//   if (state)
+//      dcb.fRtsControl = RTS_CONTROL_ENABLE;
+//   else
+//      dcb.fRtsControl = RTS_CONTROL_DISABLE;
 
-   
-   SetCommState(ComID, &dcb);
+//   
+//   SetCommState(ComID, &dcb);
 
    // debug
    if (serialdebug)
@@ -474,11 +474,11 @@ int DCDCOM(void)
 	DWORD dwModemStatus;
 	BOOL fDCD;
 
-	if (!GetCommModemStatus(ComID, &dwModemStatus))
-		// Error in GetCommModemStatus
-		return;
+//	if (!GetCommModemStatus(ComID, &dwModemStatus))
+//		// Error in GetCommModemStatus
+//		return;
 
-	return fDCD = MS_RLSD_ON & dwModemStatus;
+//	return fDCD = MS_RLSD_ON & dwModemStatus;
 }
 
 //--------------------------------------------------------------------------
@@ -492,11 +492,11 @@ int RICOM(void)
 	DWORD dwModemStatus;
 	BOOL fRI;
 
-	if (!GetCommModemStatus(ComID, &dwModemStatus))
-		// Error in GetCommModemStatus
-		return;
+//	if (!GetCommModemStatus(ComID, &dwModemStatus))
+//		// Error in GetCommModemStatus
+//		return;
 
-	return fRI = MS_RING_ON & dwModemStatus;
+//	return fRI = MS_RING_ON & dwModemStatus;
 }
 
 //--------------------------------------------------------------------------
@@ -510,11 +510,11 @@ int CTSCOM(void)
 	DWORD dwModemStatus;
 	BOOL fCTS;
 
-	if (!GetCommModemStatus(ComID, &dwModemStatus))
-		// Error in GetCommModemStatus
-		return;
+//	if (!GetCommModemStatus(ComID, &dwModemStatus))
+//		// Error in GetCommModemStatus
+//		return;
 
-	return fCTS = MS_CTS_ON & dwModemStatus;
+//	return fCTS = MS_CTS_ON & dwModemStatus;
 }
 
 //--------------------------------------------------------------------------
@@ -528,10 +528,10 @@ int DSRCOM(void)
 	DWORD dwModemStatus;
 	BOOL fDSR;
 
-	if (!GetCommModemStatus(ComID, &dwModemStatus))
-		// Error in GetCommModemStatus
-		return;
+//	if (!GetCommModemStatus(ComID, &dwModemStatus))
+//		// Error in GetCommModemStatus
+//		return;
 
-	return fDSR = MS_DSR_ON & dwModemStatus;
+//	return fDSR = MS_DSR_ON & dwModemStatus;
 }
 

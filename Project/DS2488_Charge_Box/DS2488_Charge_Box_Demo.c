@@ -75,8 +75,8 @@ Notes:	1) DS9401 is set to 3.3V 1-Wire by jumper JB1 populated.
 #define Msg_Ready_PTM				0x44
 
 #include <stdio.h>
-#include <conio.h>
-#include <windows.h>
+//#include <conio.h>
+//#include <windows.h>
 #include <time.h>
 #include "serial_win32ex.h"
 #include "1wire_UART.h"
@@ -84,7 +84,7 @@ Notes:	1) DS9401 is set to 3.3V 1-Wire by jumper JB1 populated.
 
 void msDelay(int len);
 
-int dprintf(char *format, ...);
+//int dprintf(char *format, ...);
 
 //DS2488 Charge Box Functions
 int DS2488_Discovery(uchar *romid_list);
@@ -104,7 +104,7 @@ FILE *DFile;
 // Device: DS2488
 // IOA 1-Wire Master:  DS9401 (Emulating a Charging Box)
 
-void main(int argc, char **argv)
+void ds2488_main(int argc, char **argv)
 {
 	time_t tlong;
 	struct tm *tstruct;
@@ -115,11 +115,11 @@ void main(int argc, char **argv)
 	if (DFile == NULL)
 	{
 		printf("ERROR, Could not open LOT.TXT log file!\n");
-		exit(1);
+//		exit(1);
 	}
 
 	// print time
-	time(&tlong);
+//	time(&tlong);
 	tstruct = localtime(&tlong);
 	dprintf("\n#TIMESTAMP: %02d/%02d/%04d %02d:%02d:%02d \n",
 		tstruct->tm_mon + 1, tstruct->tm_mday, tstruct->tm_year + 1900,
@@ -136,7 +136,7 @@ void main(int argc, char **argv)
 			"  PORT - argument 1 specifies the COM port "
 			"(e.g. COM1 to COM9 or \\.\COM10 for COM10 and higher)\n"
 			"  version 1.01\n");
-		exit(0);
+//		exit(0);
 	}
 
 	// setup the port
@@ -144,8 +144,8 @@ void main(int argc, char **argv)
 	{
 		dprintf("Failed to open serial port %s\n", argv[1]);
 		dprintf("\nPress any key to end demo...");
-		_getch();
-		exit(0);
+//		_getch();
+//		exit(0);
 	}
 
 	dprintf("DS2488 connect and loop by pressing anykey!\n");
@@ -158,11 +158,11 @@ void main(int argc, char **argv)
 	msDelay(3);		// Delay 2ms to charge up parasite capacitor and time for POR to complete of the 1-Wire slave device
 	dprintf("Setting 1-Wire speed to Overdrive.\n");
 	OWSpeed(MODE_OVERDRIVE);
-	srand(time(NULL));   // Initialization, should only be called once.
+//	srand(time(NULL));   // Initialization, should only be called once.
 	int Discovery_cnt = { 0 };
 	int Left_Right_Earbud_ROMID_FLAG = { 0 };
 
-	while (!kbhit())	// Hit anykey to exit loop
+	while (1/*!kbhit()*/)	// Hit anykey to exit loop
 	{
 		uchar status_byte = { 0x00 };
 		int earbud_batt_FLAG = { 0 };
@@ -253,7 +253,7 @@ void main(int argc, char **argv)
 	// release the port
 	dprintf("\n ***LOOP EXITED!***");
 	// print time
-	time(&tlong);
+//	time(&tlong);
 	tstruct = localtime(&tlong);
 	dprintf("\n#TIMESTAMP: %02d/%02d/%04d %02d:%02d:%02d \n",
 		tstruct->tm_mon + 1, tstruct->tm_mday, tstruct->tm_year + 1900,
@@ -458,25 +458,26 @@ void msDelay(int len)
 //
 // Return: number of characters printed
 //
-int dprintf(char *format, ...)
-{
-	int rt;
-	va_list ap;
+//#define dprintf printf
+//int dprintf(char *format, ...)
+//{
+//	int rt;
+//	va_list ap;
 
-	if (DFile != NULL)
-	{
-		va_start(ap, format);
-		rt = vfprintf(DFile, format, ap);
-		va_end(ap);
+//	if (DFile != NULL)
+//	{
+//		va_start(ap, format);
+//		rt = vfprintf(DFile, format, ap);
+//		va_end(ap);
 
-		fflush(DFile);
-	}
+//		fflush(DFile);
+//	}
 
-	va_start(ap, format);
-	rt = vfprintf(stdout, format, ap);
-	va_end(ap);
+//	va_start(ap, format);
+//	rt = vfprintf(stdout, format, ap);
+//	va_end(ap);
 
-	return rt;
-}
+//	return rt;
+//}
 
 

@@ -33,7 +33,7 @@
 *******************************************************************************
 */
 
-#include <windows.h>
+//#include <windows.h>
 #include <stdio.h>
 
 #include "serial_win32ex.h"
@@ -481,7 +481,7 @@ int ReadTimeoutValue(uchar* TVAL)
 
 	// Send parameter
 	*TVAL = OWReadByte();
-	docrc16(TVAL);
+	docrc16(*TVAL);
 
 	// Read CRC16
 	crc16_read[0] = OWReadByte();
