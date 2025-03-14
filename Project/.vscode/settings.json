@@ -2,6 +2,7 @@
     "files.associations": {
         "charger.h": "c",
         "stm32g0xx_hal.h": "c",
-        "1wire_uart.h": "c"
+        "1wire_uart.h": "c",
+        "common.h": "c"
     }
 }

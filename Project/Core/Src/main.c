@@ -117,8 +117,12 @@ int main(void)
 
   //RT9426_Update_Info();
   rt9426_main();
+  uart_process_init();
+  HAL_UART_Receive_IT(&huart2, &rx_data, 1);
+  ds2488_main();
   
-  //HAL_UART_Receive_IT(&huart2, &rx_data, 1);
+  
+  
 
   /* USER CODE END 2 */
 
@@ -129,11 +133,13 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-    uint8_t buf[2];
+    
     
     charger_process(charger, NULL);
     hall_process(&hall);
-#if 1
+    uart_process_analysis(&uart);
+#if 0
+    uint8_t buf[2];
     HAL_Delay(1000);
     HAL_ADC_MspDeInit(&hadc1);
     buf[0] = 0x55;buf[1] = 0xDE;
@@ -422,7 +428,7 @@ static void MX_USART2_UART_Init(void)
 
   /* USER CODE END USART2_Init 1 */
   huart2.Instance = USART2;
-  huart2.Init.BaudRate = 115200;
+  huart2.Init.BaudRate = 122400;
   huart2.Init.WordLength = UART_WORDLENGTH_8B;
   huart2.Init.StopBits = UART_STOPBITS_1;
   huart2.Init.Parity = UART_PARITY_NONE;

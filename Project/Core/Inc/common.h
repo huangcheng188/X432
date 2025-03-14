@@ -27,7 +27,19 @@ typedef struct hall_struct{
 
 extern hall_t hall;
 
+#define BUF_LEN 8
+
+typedef struct uart_struct{
+    uint8_t cnt;
+    uint8_t buf[BUF_LEN];
+}uart_t;
+
+extern uart_t uart;
+
 void project_version_printf(void);
 void hall_process(hall_t *phall);
+void uart_process_init(void);
+#define uart_process_buf_clean uart_process_init        //when receive uart data must clean buf
+void uart_process_analysis(uart_t *puart);
 
 #endif //__COMMON__

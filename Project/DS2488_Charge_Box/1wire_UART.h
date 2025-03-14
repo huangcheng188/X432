@@ -56,7 +56,7 @@ extern unsigned char ROM_NO[8];
 
 //add huangcheng 2025-03-13
 #define BOOL unsigned char
-#define uchar unsigned short 
+//#define uchar unsigned short 
 typedef unsigned long DWORD;
 #define dprintf printf
 #define dprintf(fmt, ...) printf(fmt"\r\n", ##__VA_ARGS__)

@@ -45,6 +45,8 @@
 #include "1wire_UART.h"
 #define SERIAL_SUPPORT
 #include "serial_win32ex.h"
+#include "stm32g0xx_hal.h"
+#include "common.h"
 
 // UART connectivity functions (Win32 implementation)
 void FlushCOM(void);
@@ -67,7 +69,7 @@ int CTSCOM(void);
 //OVERLAPPED osRead,osWrite;
 
 // debug mode
-int serialdebug=FALSE;
+int serialdebug=TRUE;
 
 //---------------------------------------------------------------------------
 // Attempt to open a com port.  Keep the handle in ComID.
@@ -223,22 +225,29 @@ void FlushCOM(void)
 //
 int WriteCOM(int outlen, unsigned char *outbuf)
 {
-   BOOL fWriteStat;
-   DWORD dwBytesWritten=0;
-   DWORD ler=0,to,rslt=123;
+//   BOOL fWriteStat;
+//   DWORD dwBytesWritten=0;
+//   DWORD ler=0,to,rslt=123;
    int i;
 
    // debug
    if (serialdebug)
    {
       for (i = 0; i < outlen; i++)
-         dprintf(">%02X",outbuf[i]);
+         dprintf(">-%02X",outbuf[i]);
       dprintf("\n");
    }
 
    // calculate a timeout
-   to = 40 * outlen + 205;
-
+//   to = 40 * outlen + 205;
+//add huangcheng 2025-03-13
+   extern UART_HandleTypeDef huart2;
+   HAL_StatusTypeDef ret;
+   uart_process_buf_clean();
+   Sleep(10);
+   ret = !HAL_UART_Transmit(&huart2, outbuf, outlen, HAL_MAX_DELAY);
+   return ret;
+//add end
    // reset the write event
 //   ResetEvent(osWrite.hEvent);
 
@@ -261,10 +270,10 @@ int WriteCOM(int outlen, unsigned char *outbuf)
 //   }
 
    // check results of write
-   if (!fWriteStat || (dwBytesWritten != (DWORD)outlen))
-      return 0;
-   else
-      return 1;
+//   if (!fWriteStat || (dwBytesWritten != (DWORD)outlen))
+//      return 0;
+//   else
+//      return 1;
 }
 
 //--------------------------------------------------------------------------
@@ -286,6 +295,31 @@ int ReadCOM(int inlen, unsigned char *inbuf)
 
    // calculate a timeout
    to = 40 * inlen + 205;
+//add huangcheng 2025-03-13
+   uint8_t count  = 0;
+   while(uart.cnt != (inlen+1)){
+      //dprintf("uart.cnt=%d", uart.cnt);
+      Sleep(200);
+      if(++count >= 5){
+         dprintf("uart receive error uart.cnt=%d inlen+1=%d", uart.cnt, inlen+1);
+         break;
+      }
+   }
+   
+   if(count != 5){
+      for(uint8_t i=0; i<uart.cnt-1; i++){
+         inbuf[i] = uart.buf[i+1];
+      }
+   }
+   
+   for(uint8_t i=0; i<uart.cnt-1; i++){
+      printf("R:inbuf[%d] = 0x%02x ", i, inbuf[i]);
+   }
+   printf("\r\n");
+
+   uart_process_buf_clean();
+   return uart.cnt-1;
+//add end
 
    // reset the read event
 //   ResetEvent(osRead.hEvent);

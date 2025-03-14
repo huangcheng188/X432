@@ -49,6 +49,35 @@ void hall_process(hall_t *phall)
     mode = phall->hall_mode;
 
 }
+
+uart_t uart;
+
+void uart_process_init(void)
+{
+    memset(&uart, 0, sizeof(uart_t));
+}
+
+void uart_process_analysis(uart_t *puart)
+{
+    if(puart->cnt){
+        for(uint8_t i=0; i<puart->cnt; i++){
+            printf("-R=0x%02x", puart->buf[i]);
+        }
+        printf("\r\n");
+        puart->cnt = 0;
+    }
+}
+
+static void uart_process_recive(uart_t *puart, uint8_t data)
+{
+    puart->buf[puart->cnt] = data;
+    puart->cnt++;
+    if(puart->cnt >= BUF_LEN){
+        printf("*\r\n");
+        puart->cnt = 0;
+    }
+}
+
 // 启动ADC转换并读取结果
 extern ADC_HandleTypeDef hadc1;
 extern UART_HandleTypeDef huart2;
@@ -56,7 +85,7 @@ extern UART_HandleTypeDef huart2;
 uint32_t ADC_Read(void)
 {
 
-  HAL_UART_MspDeInit(&huart2);
+  //HAL_UART_MspDeInit(&huart2);
 
   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_SET);
   HAL_Delay(10);
@@ -70,7 +99,7 @@ uint32_t ADC_Read(void)
   HAL_ADC_Stop(&hadc1);                           // 停止ADC
   //HAL_GPIO_WritePin(GPIOA, GPIO_PIN_0, GPIO_PIN_RESET);
 
-  HAL_UART_MspInit(&huart2);
+  //HAL_UART_MspInit(&huart2);
   return adcValue;                                // 返回ADC值
 }
 
@@ -122,7 +151,7 @@ void stm32_heartrate(void)
     static uint8_t cnt = 0;
     if(timer.time_1s == 0){
         timer.time_1s = 100;
-        printf("MCU:%d timer.time_1s%d\r\n", cnt++, timer.time_1s);
+        printf("MCU:%d\r\n", cnt++);
     }
 
 }
@@ -168,7 +197,9 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
   {
       // 处理接收到的数据
       //ProcessReceivedData(rx_data);
-      printf("R:%02x", rx_data);
+      //printf("R:%02x", rx_data);
+      uart_process_recive(&uart, rx_data);
+      printf("$\r\n");
       // 重新启用接收中断，以接收下一个字节
       HAL_UART_Receive_IT(&huart2, &rx_data, 1);
   }
