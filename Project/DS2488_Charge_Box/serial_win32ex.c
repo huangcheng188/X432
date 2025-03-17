@@ -47,6 +47,7 @@
 #include "serial_win32ex.h"
 #include "stm32g0xx_hal.h"
 #include "common.h"
+#include "charger.h"
 
 // UART connectivity functions (Win32 implementation)
 void FlushCOM(void);
@@ -491,7 +492,9 @@ void RTSCOM(int state)
 
 //   
 //   SetCommState(ComID, &dcb);
-
+//add huangcheng 2025-03-14 
+   max77787_chager_enbst(!state);
+//add end
    // debug
    if (serialdebug)
       dprintf("__RTS %d__\n",state);

@@ -12,7 +12,7 @@
 
 #define max77787_chager_stby(state)   HAL_GPIO_WritePin(GPIOA, GPIO_PIN_4, !!state)
 #define max77787_chager_chgenb(state) HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, !!state)
-#define max77787_chager_enbst(state)  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, !!state)
+#define max77787_chager_enbst(state)  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_7, !!(state))
 
 
 typedef enum {
