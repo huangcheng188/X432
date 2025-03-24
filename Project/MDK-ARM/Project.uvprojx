@@ -339,7 +339,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32G031xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;../Drivers/STM32G0xx_HAL_Driver/Inc;../Drivers/STM32G0xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32G0xx/Include;../Drivers/CMSIS/Include;..\Core\Inc;..\DS2488_Charge_Box</IncludePath>
+              <IncludePath>../Core/Inc;../Drivers/STM32G0xx_HAL_Driver/Inc;../Drivers/STM32G0xx_HAL_Driver/Inc/Legacy;../Drivers/CMSIS/Device/ST/STM32G0xx/Include;../Drivers/CMSIS/Include;..\Core\Inc;..\charging box side</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -817,6 +817,26 @@
               <FileName>system_stm32g0xx.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Core/Src/system_stm32g0xx.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>charging box side</GroupName>
+          <Files>
+            <File>
+              <FileName>DS2488.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\charging box side\DS2488.c</FilePath>
+            </File>
+            <File>
+              <FileName>OneWire_protocol.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\charging box side\OneWire_protocol.c</FilePath>
+            </File>
+            <File>
+              <FileName>user_DS2488.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\charging box side\user_DS2488.c</FilePath>
             </File>
           </Files>
         </Group>
