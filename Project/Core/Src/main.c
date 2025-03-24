@@ -119,7 +119,7 @@ int main(void)
   rt9426_main();
   uart_process_init();
   HAL_UART_Receive_IT(&huart2, &rx_data, 1);
-  ds2488_main();
+  //ds2488_main();
   
   
   

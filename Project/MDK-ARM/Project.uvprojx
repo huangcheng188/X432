@@ -821,31 +821,6 @@
           </Files>
         </Group>
         <Group>
-          <GroupName>DS2488</GroupName>
-          <Files>
-            <File>
-              <FileName>1wire_UART.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\DS2488_Charge_Box\1wire_UART.c</FilePath>
-            </File>
-            <File>
-              <FileName>DS2488.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\DS2488_Charge_Box\DS2488.c</FilePath>
-            </File>
-            <File>
-              <FileName>DS2488_Charge_Box_Demo.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\DS2488_Charge_Box\DS2488_Charge_Box_Demo.c</FilePath>
-            </File>
-            <File>
-              <FileName>serial_win32ex.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>..\DS2488_Charge_Box\serial_win32ex.c</FilePath>
-            </File>
-          </Files>
-        </Group>
-        <Group>
           <GroupName>::CMSIS</GroupName>
         </Group>
       </Groups>
