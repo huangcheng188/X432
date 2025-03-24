@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <time.h>
-#include <dir.h>
+//#include <dir.h>
 
 /* type defs */
 typedef unsigned char  uchar;

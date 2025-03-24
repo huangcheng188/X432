@@ -42,15 +42,15 @@ typedef unsigned long DWORD;
 #define MS_RING_ON 0x01
 #define MS_DSR_ON  0x01
 
-#define TOKEN_IOA 0
-#define TOKEN_IOB 1
-#define TOKEN_PTM 2
+//#define TOKEN_IOA 0
+//#define TOKEN_IOB 1
+//#define TOKEN_PTM 2
 
-#define PARMSET_115200 115200
-#define PARMSET_800000 800000
+//#define PARMSET_115200 115200
+//#define PARMSET_800000 800000
 
-#define ZERO_BIT  0
-#define ONE_BIT   1
+//#define ZERO_BIT  0
+//#define ONE_BIT   1
 
 #define Sleep HAL_Delay 
 //add end

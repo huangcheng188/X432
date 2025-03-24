@@ -1,4 +1,5 @@
 #include "DS2488.h"
+#include "user_DS2488.h"
 
 #ifdef TMEX
 
