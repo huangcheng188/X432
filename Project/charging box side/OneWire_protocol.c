@@ -1,3 +1,6 @@
+#include "DS2488.h"
+#include "OneWire_protocol.h"
+
 #ifdef TMEX
 unsigned char WriteCOM(int outlen, uchar *outbuf);
 int ReadCOM(int inlen, uchar *inbuf);
@@ -6,21 +9,21 @@ void SetBaudCOM(uchar new_baud);
 void DTRCOM(int state);
 void RTSCOM(int state);
 
-unsigned char _fastcall SetOverDrive(void);
-short _fastcall FindFirstFamily(short);
-short  _fastcall owNext(short , short );
-unsigned char _fastcall OpenExtensionUART(void);
+unsigned char  SetOverDrive(void);
+short  FindFirstFamily(short);
+short   owNext(short , short );
+unsigned char  OpenExtensionUART(void);
 void CloseUART(void);
-short  _fastcall owNext(short, short);
+short   owNext(short, short);
 void owFamilySearchSetup(short );
-uchar _fastcall docrc8(uchar );
+uchar  docrc8(uchar );
 short TMBlockStream(long,unsigned char *,short);
 
 //Find the extension COM port of CP2102 and open this COM port to control the programming pulse
 //return true if success, or false if fail
-unsigned char _fastcall OpenExtensionUART(void)
+unsigned char  OpenExtensionUART(void)
 {
-
+#if 0
 //   unsigned char type[4]={1,6,5,2};    //1-Wire adapter type,5-DS9097U, 1-DS9097E, 6-DS9490R
    unsigned char result=FALSE;
    char Com_port[30]="\\\\.\\COM3";
@@ -157,6 +160,7 @@ unsigned char _fastcall OpenExtensionUART(void)
    }
      if(i!=40 )  return i;               //return true;
      else return false;
+#endif
 }
 
 //---------------------------------------------------------------------------
@@ -165,6 +169,7 @@ unsigned char _fastcall OpenExtensionUART(void)
 //
 void CloseUART(void)
 {
+#if 0
    // disable event notification and wait for thread
    // to halt
    SetCommMask(ComID, 0);
@@ -179,6 +184,7 @@ void CloseUART(void)
 //   CloseHandle(osRead.hEvent);
 //   CloseHandle(osWrite.hEvent);
    ComID = 0;
+#endif
 }
 //---------------------------------------------------------------------------
 // Flush the rx and tx buffers
@@ -186,9 +192,11 @@ void CloseUART(void)
 //
 void FlushCOM()
 {
+#if 0
    // purge any information in the buffer
    PurgeComm(ComID, PURGE_TXABORT | PURGE_RXABORT |
                     PURGE_TXCLEAR | PURGE_RXCLEAR );
+#endif
 }
 
 //--------------------------------------------------------------------------
@@ -203,6 +211,7 @@ void FlushCOM()
 //
 unsigned char WriteCOM(int outlen, uchar *outbuf)
 {
+#if 0
    BOOL fWriteStat;
    DWORD dwBytesWritten=0;
    DWORD ler=0,to;
@@ -240,6 +249,7 @@ unsigned char WriteCOM(int outlen, uchar *outbuf)
       return 0;
    else
       return 1;
+#endif
 }
 
 //--------------------------------------------------------------------------
@@ -253,6 +263,7 @@ unsigned char WriteCOM(int outlen, uchar *outbuf)
 //
 int ReadCOM(int inlen, uchar *inbuf)
 {
+#if 0
    DWORD dwLength=0;
    BOOL fReadStat;
    DWORD ler=0,to;
@@ -287,6 +298,7 @@ int ReadCOM(int inlen, uchar *inbuf)
       return dwLength;
    else
       return 0;
+#endif
 }
 
 //--------------------------------------------------------------------------
@@ -297,6 +309,7 @@ int ReadCOM(int inlen, uchar *inbuf)
 //
 void BreakCOM(void)
 {
+#if 0
    // start the reset pulse
    SetCommBreak(ComID);
 
@@ -305,6 +318,7 @@ void BreakCOM(void)
 
    // clear the break
    ClearCommBreak(ComID);
+#endif
 }
 //--------------------------------------------------------------------------
 // Set the active low DTR state
@@ -314,6 +328,7 @@ void BreakCOM(void)
 //
 void DTRCOM(int state)
 {
+#if 0
    DCB dcb;
 
    dcb.DCBlength = sizeof(DCB);
@@ -325,7 +340,7 @@ void DTRCOM(int state)
       dcb.fDtrControl = DTR_CONTROL_DISABLE;
 
    SetCommState(ComID, &dcb);
-
+#endif
 
 }
 
@@ -337,6 +352,7 @@ void DTRCOM(int state)
 //
 void RTSCOM(int state)
 {
+#if 0
    DCB dcb;
 
    dcb.DCBlength = sizeof(DCB);
@@ -349,7 +365,7 @@ void RTSCOM(int state)
 
    
    SetCommState(ComID, &dcb);
-
+#endif
 }
 //--------------------------------------------------------------------------
 // Set the baud rate on the com port.
@@ -371,6 +387,7 @@ void RTSCOM(int state)
 
 void SetBaudCOM(uchar new_baud)
 {
+#if 0
    DCB dcb1;
 
    // get the current com port state
@@ -427,13 +444,14 @@ void SetBaudCOM(uchar new_baud)
 
    // restore to set the new baud rate
    SetCommState(ComID, &dcb1);
+#endif 
 }
 
 
 //--------------------------------------------------------------------------
 // 1-wire communication Reset and detect the presence pulse
 //
-unsigned char _fastcall OneWireReset(void)
+unsigned char  OneWireReset(void)
 {
 
    unsigned char TxBuffer,RxBuffer;
@@ -474,7 +492,7 @@ unsigned char _fastcall OneWireReset(void)
 //--------------------------------------------------------------------------
 // Write bit to one-wire interface
 //
-unsigned char _fastcall WriteBit(unsigned char bit_value)
+unsigned char  WriteBit(unsigned char bit_value)
 {
    unsigned char TxBuffer=ONE_BIT,RxBuffer;
    if( bit_value==0) TxBuffer=ZERO_BIT;
@@ -487,7 +505,7 @@ unsigned char _fastcall WriteBit(unsigned char bit_value)
 //--------------------------------------------------------------------------
 // Read bit from one wire interface
 //
-unsigned char _fastcall ReadBit(void)
+unsigned char  ReadBit(void)
 {
    unsigned char TxBuffer=ONE_BIT,RxBuffer;
    WriteCOM(1,&TxBuffer);
@@ -498,7 +516,7 @@ unsigned char _fastcall ReadBit(void)
 //--------------------------------------------------------------------------
 // Write byte to one wire interface
 //
-unsigned char _fastcall WriteByte(unsigned char Byte_Value)
+unsigned char  WriteByte(unsigned char Byte_Value)
 {
    unsigned char TxBuffer[8],RxBuffer[8],ReadByte=0;
    short i;
@@ -516,7 +534,7 @@ unsigned char _fastcall WriteByte(unsigned char Byte_Value)
 //--------------------------------------------------------------------------
 // Read byte from one wire interface
 //
-unsigned char _fastcall ReadByte(void)
+unsigned char  ReadByte(void)
 {
    unsigned char TxBuffer[8],RxBuffer[8],ReadByte=0;
    short i;
@@ -530,7 +548,7 @@ unsigned char _fastcall ReadByte(void)
 //--------------------------------------------------------------------------
 // 1-wire communication Reset and detect the presence pulse
 //
-unsigned char _fastcall SetOverDrive(void)
+unsigned char  SetOverDrive(void)
 {
 /*   OneWireRate=NormalMode;
    if( (OneWireReset())==false ) return false;
@@ -594,7 +612,7 @@ int owSkipROM(void)
 /*------------------------------------------------------------------------
  * Match the 64-bit ROMID
  */
-short _fastcall owMatchROM(uchar *buf)
+short  owMatchROM(uchar *buf)
 {
    short i;
 
@@ -714,7 +732,7 @@ uchar dscrc_table[] = {
       233,183, 85, 11,136,214, 52,106, 43,117,151,201, 74, 20,246,168,
       116, 42,200,150, 21, 75,169,247,182,232, 10, 84,215,137,107, 53};
 //--------
-uchar _fastcall docrc8(uchar x)
+uchar  docrc8(uchar x)
 {
    CRC8 = dscrc_table[CRC8 ^ x];
    return CRC8;

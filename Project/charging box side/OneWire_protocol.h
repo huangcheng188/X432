@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <time.h>
-#include <dir.h>
+//#include <dir.h>
 
 /* constants */
 
@@ -52,9 +52,9 @@
 
 
 #ifdef TMEX
-HANDLE ComID;
-DCB dcb;
-OVERLAPPED osRead,osWrite;
+//HANDLE ComID;
+//DCB dcb;
+//OVERLAPPED osRead,osWrite;
 unsigned char  OneWireRate;
 
 // global variables for this module to hold search state information

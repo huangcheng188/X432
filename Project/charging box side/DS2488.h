@@ -24,7 +24,36 @@
 // ---------------------------------------------------------------------------
 //
 // DS2488.h - Include file for DS2488.c
-// 
+//
+
+//add huangcheng 
+
+#define TMEX
+
+#define true  1
+#define false 0
+  
+#define CHARGING_POWER_ON 1
+#define LOGIC_HIGH  1
+
+typedef unsigned char BOOL;
+typedef unsigned long DWORD;
+
+#define MS_RING_ON 0x01
+#define MS_DSR_ON  0x01
+
+#define TOKEN_IOA 0
+#define TOKEN_IOB 1
+#define TOKEN_PTM 2
+
+#define PARMSET_115200 115200
+#define PARMSET_800000 800000
+
+#define ZERO_BIT  0
+#define ONE_BIT   1
+
+#define Sleep HAL_Delay 
+//add end
 
 /* type defs */
 typedef unsigned char  uchar;
@@ -96,7 +125,7 @@ typedef unsigned long  ulong;
 extern int DS2488WriteConfigure(uchar *parameter);
 extern int DS2488ReadConfigure(uchar *parameter);
 extern int DS2488WriteBuffer(uchar *buf, uchar Buf_len);
-extern int DS2488ReadBuffer(uchar *buf, uchar Buf_len);
+extern int DS2488ReadBuffer(uchar *buf, uchar *Buf_len);
 extern int DS2488ReadStatus(uchar *Status);
 extern int DS2488WritePIO(uchar *PIO_Output);
 extern int DS2488ReadPIO(uchar *PIO_Input);

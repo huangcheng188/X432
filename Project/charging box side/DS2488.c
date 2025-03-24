@@ -34,14 +34,16 @@
 
 #define DS2488_DEVICE
 #include "DS2488.h"
+extern unsigned char CRC8;
 
-#include <memory.h>
+//#include <memory.h>
+#include <string.h>
 
 // function declarations
 int DS2488WriteConfigure(uchar *parameter);
 int DS2488ReadConfigure(uchar *parameter);
 int DS2488WriteBuffer(uchar *buf, uchar Buf_len);
-int DS2488ReadBuffer(uchar *buf, uchar Buf_len);
+int DS2488ReadBuffer(uchar *buf, uchar *Buf_len);
 int DS2488ReadStatus(uchar *Status);
 int DS2488WritePIO(uchar *PIO_Output);
 int DS2488ReadPIO(uchar *PIO_Input);
